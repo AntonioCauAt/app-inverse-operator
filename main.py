@@ -79,20 +79,19 @@ print(stc)
 # == SAVE RESULTS ==
 
 # == SAVE SOURCE ESTIMATE ==
-stc_fname = os.path.join('out_dir', 'stc')
+stc_fname = os.path.join('out_dir', 'stc.fif')
 stc.save(stc_fname)
 
 # == SAVE SOURCE ESTIMATE FIGURE ==
-subjects_dir = config.get('subjects_dir', os.path.join(__location__, 'freesurfer'))
-fig_stc = stc.plot(hemi='both', subjects_dir=subjects_dir, subject='sub-01',
-                   show_traces=False, views='lat', initial_time=0.1)
+#fig_stc = stc.plot(hemi='both', subjects_dir=subjects_dir, subject='sub-01',
+#                   show_traces=False, views='lat', initial_time=0.1)
 
 # Save the STC figure as an image
-fig_stc_fname = os.path.join('out__figs', 'stc_plot.png')
-fig_stc.savefig(fig_stc_fname)
+#fig_stc_fname = os.path.join('out__figs', 'stc_plot.png')
+#fig_stc.savefig(fig_stc_fname)
 
 # Create and save report
 report = mne.Report(title='Inverse Operator Report')
-report.add_figs_to_section(fig_stc, 'Source Estimate', section='STC')
+#report.add_figs_to_section(fig_stc, 'Source Estimate', section='STC')
 report_path = os.path.join('out__dir_report', 'report.html')
 report.save(report_path, overwrite=True)
