@@ -79,7 +79,7 @@ print(stc)
 # == SAVE RESULTS ==
 
 # == SAVE SOURCE ESTIMATE ==
-stc_fname = os.path.join('out_dir', 'stc.fif')
+stc_fname = os.path.join('out_dir', 'stc')
 stc.save(stc_fname)
 
 # == SAVE SOURCE ESTIMATE FIGURE ==
