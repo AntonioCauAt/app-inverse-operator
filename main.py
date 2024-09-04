@@ -18,10 +18,8 @@ with open(__location__+'/config.json') as config_json:
     
 
 # == config parameters fw ==
-fname_raw    = config['mne']
-subjects_dir = config['output'] 
-fname_trans  = config ['cov']
-include_meg  = config['include_meg']
+fname_fwd    = config['forward']
+fname_noisecov  = config ['cov']
 subject = 'output'
 
 # == config parameters noisecov ==
@@ -31,56 +29,26 @@ epochs = mne.read_epochs(fname)
 # Configuration depending on what we want
 epochs.pick_types(meg=True, eeg=False)
 
-#Compute the evoked responses for two conditions: faces and scrambled
-evoked_face = epochs['face'].average()
-evoked_scrambled = epochs['scrambled'].average()
-
-# Compute noise covariance matrix: Calcula la matriz de covarianza de ruido
-noise_cov = mne.compute_covariance(epochs, tmax=0.,
-                                   method=['shrunk', 'empirical'],
-                                   rank='info')
-print(noise_cov['method'])
-
-# == SOURCE SPACE ==
-#Assume that coregistration is done
-src = mne.setup_source_space(subject, spacing='oct6', subjects_dir=subjects_dir,add_dist=False)
-
-# Compute BEM Model
-conductivity = (0.3,)  # for single layer (MEG)
-# conductivity = (0.3, 0.006, 0.3)  # for three layers (EEG)
-model = mne.make_bem_model(subject=subject, ico=4, conductivity=conductivity, subjects_dir=subjects_dir)
-bem = mne.make_bem_solution(model)
-
-# Compute Forward Model
-fwd = mne.make_forward_solution(fname_raw, 
-            trans=fname_trans,
-            src=src, 
-            bem=bem,
-            meg=include_meg,  # include MEG channels
-            eeg=False,  # exclude EEG channels
-            mindist=5.0,  # ignore sources <= 5mm from inner skull
-            n_jobs=1)  # number of jobs to run in parallel
-
 #Fixed forward operator
-fwd_fixed = mne.convert_forward_solution(fwd, surf_ori=True)
+fwd_fixed = mne.convert_forward_solution(fname_fwd, surf_ori=True)
 
-#Compute the contrast between the two conditions
-evoked_contrast = mne.combine_evoked([evoked_face, evoked_scrambled], [0.5, -0.5])
-evoked_contrast.crop(-0.05, 0.25)
-info = evoked_contrast.info
-inverse_operator = make_inverse_operator (info, fwd_fixed, noise_cov, loose=0.2, depth=0.8)
+#Compute the evoked responses for two conditions: faces and scrambled
+evoked = epochs.average()
+info = evoked.info
+inverse_operator = make_inverse_operator (info, fwd_fixed, fname_noisecov, loose=0.2, depth=0.8)
 
 #Applying inverse operator to our evoked contrast
 method = "dSPM"
 snr = 3.
 lambda2 = 1. / snr ** 2  # regularization
-stc = apply_inverse (evoked_contrast, inverse_operator, lambda2,  method=method, pick_ori=None)
+stc = apply_inverse (evoked, inverse_operator, lambda2,  method=method, pick_ori=None)
 print(stc)
+
 
 # == SAVE RESULTS ==
 
 # == SAVE SOURCE ESTIMATE ==
-stc_fname = os.path.join('out_dir', 'stc')
+stc_fname = os.path.join('out_dir', 'inv')
 stc.save(stc_fname)
 
 # == SAVE SOURCE ESTIMATE FIGURE ==
