@@ -15,30 +15,31 @@ __location__ = os.path.realpath(
 # Populate mne_config.py file with brainlife config.json
 with open(__location__+'/config.json') as config_json:
     config = json.load(config_json)
+    
 
-# Read the epochs file: Lee el archivo de epochs usando mne
-epochs_fname = config.pop('fname') 
-epo = mne.read_epochs(epochs_fname)  
-
-# Configuration depending on what we want
-epo.pick_types(meg=True, eeg=False)
-
-#Compute the evoked responses for two conditions: faces and scrambled
-evoked_face = epo['face'].average()
-evoked_scrambled = epo['scrambled'].average()
-
-# Compute noise covariance matrix: Calcula la matriz de covarianza de ruido
-noise_cov = mne.compute_covariance(epo, tmax=0.,
-                                   method=['shrunk', 'empirical'],
-                                   rank='info')
-print(noise_cov['method'])
-
-# == CONFIG PARAMETERS ==
+# == config parameters fw ==
 fname_raw    = config['mne']
 subjects_dir = config['output'] 
 fname_trans  = config ['cov']
 include_meg  = config['include_meg']
 subject = 'output'
+
+# == config parameters noisecov ==
+fname = config ['epo']
+epochs = mne.read_epochs(fname) 
+
+# Configuration depending on what we want
+epochs.pick_types(meg=True, eeg=False)
+
+#Compute the evoked responses for two conditions: faces and scrambled
+evoked_face = epochs['face'].average()
+evoked_scrambled = epochs['scrambled'].average()
+
+# Compute noise covariance matrix: Calcula la matriz de covarianza de ruido
+noise_cov = mne.compute_covariance(epochs, tmax=0.,
+                                   method=['shrunk', 'empirical'],
+                                   rank='info')
+print(noise_cov['method'])
 
 # == SOURCE SPACE ==
 #Assume that coregistration is done
