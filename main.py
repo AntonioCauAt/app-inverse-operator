@@ -30,12 +30,12 @@ epochs = mne.read_epochs(fname)
 epochs.pick_types(meg=True, eeg=False)
 
 #Fixed forward operator
-fwd_fixed = mne.convert_forward_solution(fname_fwd, surf_ori=True)
+#fwd_fixed = mne.convert_forward_solution(fname_fwd, surf_ori=True)
 
 #Compute the evoked responses for two conditions: faces and scrambled
 evoked = epochs.average()
 info = evoked.info
-inverse_operator = make_inverse_operator (info, fwd_fixed, fname_noisecov, loose=0.2, depth=0.8)
+inverse_operator = make_inverse_operator (info, fname_fwd, fname_noisecov, loose=0.2, depth=0.8)
 
 #Applying inverse operator to our evoked contrast
 method = "dSPM"
