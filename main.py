@@ -63,6 +63,6 @@ stc.save(stc_fname)
 # Create and save report
 report = mne.Report(title='Inverse Operator Report')
 #report.add_figs_to_section(fig_stc, 'Source Estimate', section='STC')
-report_path = os.path.join('out__dir_report', 'report.html')
+report_path = os.path.join('out_dir_report', 'report.html')
 report.save(report_path, overwrite=True)
 
