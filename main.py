@@ -5,7 +5,7 @@ import mne
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-
+#papa
 matplotlib.use('Agg')
 
 # Current path
